@@ -1,59 +1,40 @@
-// fetch('https://jsonplaceholder.typicode.com/posts', {
-//     method: 'POST',
-//     body: JSON.stringify({
-//         title: 'foo',
-//         body: 'bar',
-//         userId: 1,
-//     }),
-//     headers: {
-//         'Content-type': 'application/json; charset=UTF-8',
-//     },
-// })
-//     .then(response => response.json())
-//     .then(data => {
-//         console.log(data)
-//     })
-//     .catch(error => {
-//         console.log(error)
-//     })
-const getDb = 'db.json'
-const sendDb = 'https://jsonplaceholder.typicode.com/posts'
+const select = document.getElementById('cars')
+const showModel = document.querySelector('.show-model')
+const showPrice = document.querySelector('.show-price')
 
-const getData = (url) => {
-    return fetch(url)
-        .then(response => response.json())
+const carsDb = () => {
+    return fetch('cars.json')
+        .then(respone => respone.json())
         .then(data => {
-            console.log('данные db', data)
+            console.log('данные cars:', data)
             return data
         })
         .catch(error => {
             console.log('ошибка', error)
         })
-};
+}
 
-const sendData = (url, data) => {
-    return fetch(url, {
-        method: 'POST',
-        body: data,
-        headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-        }
-    })
-        .then(response => response.json())
+const showCars = (car) => {
+    if (car) {
+        showModel.textContent = `Тачка: ${car.model}`
+        showPrice.textContent = `Цена: $${car.price}`
+    } else {
+        showPrice.textContent = ''
+        showModel.textContent = ''
+    }
+}
+
+select.addEventListener('change', function() {
+    const selectBrand = this.value;
+
+    carsDb()
         .then(data => {
-            console.log('данные сервера', data);
-            return data
+            if (data) {
+                const selectedCar = data.cars.filter(car => car.brand === selectBrand)[0]
+                showCars(selectedCar);
+            }
         })
         .catch(error => {
-            console.log('ошибка', error)
-        })
-};
-
-getData(getDb)
-    .then(data => sendData(sendDb, JSON.stringify(data)))
-    .then(data => {
-        console.log('ok', data)
-    })
-    .catch(error => {
-        console.log('ошибка', error)
-    });
+            console.error('ошибка', error)
+        });
+});
